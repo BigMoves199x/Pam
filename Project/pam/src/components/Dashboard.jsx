@@ -17,10 +17,11 @@ const App = () => {
 
   // Filter users based on the search query
   const filteredUsers = users.filter(user =>
-    user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    (user?.firstName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (user?.lastName?.toLowerCase() || '').includes(searchQuery.toLowerCase()) ||
+    (user?.email?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
+  
 
   // Call fetchUsers when the component mounts
   useEffect(() => {

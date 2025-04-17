@@ -30,10 +30,10 @@ const InvestmentPlan = () => {
   ];
 
   return (
-    <div className="py-20 bg-gray-50 h-full w-full">
+    <div className="py-20 bg-black h-full w-full">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Title Section */}
-        <h2 className="text-4xl font-bold text-center text-neutral-800 mb-12">
+        <h2 className="text-4xl font-bold text-center text-white mb-12">
           Our Investment Plans
         </h2>
 
@@ -53,7 +53,7 @@ const InvestmentPlan = () => {
               <p className="text-gray-700 mt-4 leading-relaxed">
                 {plan.description}
               </p>
-              <button className="mt-6 px-6 py-3 text-[#9e306d] px-4 py-2 rounded-md bg-white border-solid border-2 border-[#9e306d] hover:bg-[#9e306d] hover:text-white transition duration-300">
+              <button className="mt-6 px-6 py-3 text-black px-4 py-2 rounded-md bg-white border-solid border-2 border-black hover:bg-black hover:text-white transition duration-300">
                 Learn More
               </button>
             </div>

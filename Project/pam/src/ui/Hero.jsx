@@ -1,36 +1,36 @@
-import React from 'react';
-import Landing from '../assets/Landing.png'
-import Navbar from './Navbar'; // Import your Navbar component
+import React from "react";
+import Analysis from '../assets/Analysis.png';
+import Navbar from "./Navbar";
 
 const Hero = () => {
   return (
-    <div className="relative h-screen bg-gradient-to-r from-[#EA384D] to-[#D31027]">
-      {/* Background Image */}
-
-   {/*    <img
-        src={Landing}
-        alt="Investment background for larger screens"
-        className="hidden md:block object-cover w-full h-full"
-      /> */}
-
-      {/* Navbar inside Hero */}
-      <div className="absolute inset-x-0 top-0 z-20">
-        <Navbar /> {/* This ensures the navbar appears on top of the background */}
+    <div className="bg-black relative h-screen flex flex-col">
+      <div className="p-4">
+        <Navbar />
       </div>
 
-      {/* Text Content */}
-      <div className="absolute top-1/4 left-4 md:top-1/3 md:left-12 flex flex-col items-start text-[#9e306d] z-20 px-6 md:px-28 font-hind">
-        <h2 className="text-xl sm:text-2xl md:text-4xl font-bold leading-tight text-left w-full md:w-[50%]">
-          Supercharge your vision on building your Dream today
-        </h2>
 
-        <p className="mt-4 text-sm sm:text-base md:text-lg text-left max-w-full md:max-w-2xl font-hind w-full md:w-[40%]">
-          Let us guide you through investment opportunities that pave the way to financial success and growth.
-        </p>
+      <div className="flex-1 flex items-center justify-center px-6">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl text-white gap-10">
 
-        <button className="mt-6 px-6 py-2 sm:px-8 sm:py-3 bg-white text-[#9e306d] hover:text-white font-semibold rounded-lg hover:bg-[#9e306d] border-[#9e306d] border-2 transition-all duration-300">
-          Get Started
-        </button>
+          {/* Text Content */}
+          <div className="md:w-1/2">
+            <h2 className="text-4xl sm:text-4xl font-bold leading-tight drop-shadow-lg">
+              Supercharge Your Vision Today
+            </h2>
+            <p className="mt-5 text-lg md:text-xl text-gray-300 opacity-90 leading-relaxed max-w-md">
+              Let us guide you through investment opportunities that pave the way to financial success and growth.
+            </p>
+            <button className="mt-6 px-8 py-3 bg-black border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition-all duration-300 shadow-md">
+              Get Started
+            </button>
+          </div>
+
+          {/* Image */}
+          <div className="md:w-1/2 flex justify-center">
+            <img src={Analysis} alt="Analysis Graphic" className="w-[300px] md:w-[400px] h-auto object-contain" />
+          </div>
+        </div>
       </div>
     </div>
   );
