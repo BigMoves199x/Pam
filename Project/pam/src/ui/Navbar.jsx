@@ -13,8 +13,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-[#FFFDD0] text-black shadow-md rounded-full">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+    <nav className="w-full h-[60px] bg-[#FFFDD0] text-black shadow-md rounded-full relative -top-2">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative bottom-2">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div>
@@ -24,7 +24,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-10 text-lg font-medium">
+          <div className="hidden md:flex space-x-16 text-lg font-medium">
             <a href="#home" className="hover:text-gray-300 transition duration-300">
               Home
             </a>
