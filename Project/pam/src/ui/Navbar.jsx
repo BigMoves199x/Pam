@@ -64,14 +64,15 @@ const Navbar = () => {
       >
         <div className="flex flex-col items-center py-6 space-y-5 text-base font-semibold">
           {["home", "services", "about", "contact"].map((item) => (
-            <a
+            <ScrollLink
+            to={item}
               key={item}
               href={`#${item}`}
               onClick={() => setIsOpen(false)}
               className="hover:text-gray-500 transition duration-300"
             >
               {item.charAt(0).toUpperCase() + item.slice(1)}
-            </a>
+            </ScrollLink>
           ))}
           
         </div>
