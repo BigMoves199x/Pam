@@ -15,7 +15,7 @@ const Hero = () => {
 
           {/* Text Content */}
           <div className="md:w-1/2">
-            <h2 className="text-4xl sm:text-4xl font-bold leading-tight drop-shadow-lg">
+            <h2 className="text-5xl sm:text-6xl font-bold leading-tight drop-shadow-lg">
               Supercharge Your Vision Today
             </h2>
             <p className="mt-5 text-lg md:text-xl text-gray-300 opacity-90 leading-relaxed max-w-md">
@@ -28,7 +28,7 @@ const Hero = () => {
 
           {/* Image */}
           <div className="md:w-1/2 flex justify-center">
-            <img src={Analysis} alt="Analysis Graphic" className="w-[300px] md:w-[400px] h-auto object-contain" />
+            <img src={Analysis} alt="Analysis Graphic" className="w-[340px] md:w-[442px] h-auto object-contain" />
           </div>
         </div>
       </div>

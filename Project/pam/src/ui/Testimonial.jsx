@@ -20,10 +20,10 @@ const testimonials = [
 ];
 
 const stats = [
-  { title: "Success Stories", value: "500+" },
-  { title: "Goals Achieved", value: "1,200+" },
-  { title: "Clients Worldwide", value: "300+" },
-  { title: "Awards Won", value: "50+" },
+  { title: "Success Stories", value: "200+" },
+  { title: "Goals Achieved", value: "1,000+" },
+  { title: "Clients Worldwide", value: "250+" },
+  { title: "Awards Won", value: "10+" },
 ];
 
 const Testimonials = () => {
@@ -37,7 +37,7 @@ const Testimonials = () => {
             className="flex flex-col items-center space-y-2 bg-white shadow-lg p-6 rounded-lg hover:shadow-2xl transition-shadow duration-300"
             whileHover={{ scale: 1.05 }}
           >
-            <p className="text-3xl md:text-4xl font-bold text-[#9e306d]">
+            <p className="text-3xl md:text-4xl font-bold text-black">
               {stat.value}
             </p>
             <p className="text-lg font-medium text-gray-700">{stat.title}</p>
