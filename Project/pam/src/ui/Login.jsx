@@ -48,7 +48,7 @@ const Login = () => {
   
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div id="login" className="min-h-screen flex items-center justify-center bg-black">
       <div className="relative bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <button
           onClick={() => navigate('/')}

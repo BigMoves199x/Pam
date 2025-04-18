@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import Prime from "../assets/Prime.png";
 import { useNavigate } from "react-router-dom";
+import { Link as ScrollLink } from "react-scroll"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,16 +24,19 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-12 text-[16px]">
-            {["home", "services", "about", "contact"].map((item) => (
-              <a
-                key={item}
-                href={`#${item}`}
-                className="hover:text-gray-500 transition duration-300"
-              >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
-              </a>
-            ))}
-          </div>
+  {["home", "about", "services", "contact"].map((item) => (
+    <ScrollLink
+      key={item}
+      to={item}
+      smooth={true}
+      duration={500}
+      offset={-70}
+      className="cursor-pointer hover:text-gray-500 transition duration-300 capitalize"
+    >
+      {item}
+    </ScrollLink>
+  ))}
+</div>
 
           {/* Login Button - Desktop */}
           <button
