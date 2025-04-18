@@ -1,175 +1,114 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/userDetails'); // Adjust based on your project structure
+const User = require('../models/userDetails');
+const asyncHandler = require('express-async-handler');
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your_secret_key'; // Use environment variables for better security
+const SECRET_KEY = process.env.KEY;
+if (!SECRET_KEY) {
+  throw new Error('SECRET_KEY is not defined in environment variables');
+}
 
-// User signup
-const userSignup = async (req, res) => {
-  try {
-    const {
-      firstName,
-      lastName,
-      email,
-      phone,
-      password,
-      address,
-      identificationType,
-      identificationNumber,
-      identificationUpload,
-      nextOfKin,
-    } = req.body;
+// Generate JWT Token
+const generateToken = (id, email) => jwt.sign({ id, email }, SECRET_KEY, { expiresIn: '1d' });
 
-    // Check if the email or identification number is already in use
-    const existingUser = await User.findOne({ $or: [{ email }, { identificationNumber }] });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email or Identification Number already in use' });
-    }
+// User Signup
+const userSignup = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, phone, password } = req.body;
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      phone,
-      password: hashedPassword,
-      address,
-      identificationType,
-      identificationNumber,
-      identificationUpload,
-      nextOfKin,
-    });
-
-    // Save the user to the database
-    await user.save();
-
-    // Generate a JWT token
-    const token = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: '1d' });
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      }, // Expose limited user data
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error during signup', error: error.message });
+  if (!email || !password || !firstName || !lastName) {
+    return res.status(400).json({ message: 'All required fields must be provided' });
   }
-};
 
-// User login
-const userLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Check if the user exists
-    const user = await User.findOne({ email }).select('+password'); // Explicitly select password
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Compare passwords
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    // Generate a JWT token
-    const token = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: '1d' });
-
-    res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error during login', error: error.message });
+  const existingUser = await User.findOne({ email }).lean();
+  if (existingUser) {
+    return res.status(400).json({ message: 'User already exists' });
   }
-};
 
-// Controller functions for CRUD operations
-const createUser = async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating user', error: error.message });
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    firstName,
+    lastName,
+    email,
+    phone,
+    password: hashedPassword,
+  });
+
+  res.status(201).json({
+    message: 'User registered successfully',
+    token: generateToken(user._id, user.email),
+    user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email },
+  });
+});
+
+// User Login
+const userLogin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
   }
-};
 
-const getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching user', error: error.message });
+  const user = await User.findOne({ email }).select('+password').lean();
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: 'Invalid email or password' });
   }
-};
 
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching users', error: error.message });
-  }
-};
+  res.status(200).json({
+    message: 'Login successful',
+    token: generateToken(user._id, user.email),
+    user: { id: user._id, firstName: user.firstName, lastName: user.lastName, email: user.email },
+  });
+});
 
-const updateUser = async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating user', error: error.message });
-  }
-};
-
-const deleteUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error: error.message });
-  }
-};
-
-// Token-based Authentication Middleware
+// Middleware: Token-based Authentication
 const authenticateToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) return res.status(403).json({ message: 'Access denied, token missing' });
+  const token = req.headers.authorization?.split(' ')[1];
 
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
+  if (!token) {
+    return res.status(403).json({ message: 'Access denied, token missing' });
+  }
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid or expired token' });
+    }
     req.user = decoded;
     next();
-  } catch (error) {
-    res.status(403).json({ message: 'Invalid or expired token' });
-  }
+  });
 };
 
+// CRUD Operations
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).lean();
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  res.status(200).json(user);
+});
+
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select('-password').lean();
+  res.status(200).json(users);
+});
+
+const updateUser = asyncHandler(async (req, res) => {
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-password').lean();
+  if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+  res.status(200).json(updatedUser);
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndDelete(req.params.id).lean();
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  res.status(200).json({ message: 'User deleted successfully' });
+});
+
 module.exports = {
-  createUser,
+  userSignup,
+  userLogin,
+  authenticateToken,
   getUserById,
   getAllUsers,
   updateUser,
   deleteUser,
-  userSignup,
-  userLogin,
-  authenticateToken,
 };

@@ -1,158 +1,169 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const AdminUser = require('./models/adminUser'); // Import the AdminUser model
-const User = require('./models/userDetails'); // Import the User model
-const Investment = require('./models/investment'); // Import the Investment model
-const connectDB = require('./config/connection'); // Import the DB connection file
 const dotenv = require('dotenv');
+const connectDB = require('./db/connection');
+const User = require('./models/userDetails');
+const Product = require('./models/usersProduct');
 
 dotenv.config();
 
-// User data
+// Sample users data
 const userData = [
     {
         firstName: "Alice",
         lastName: "Smith",
         email: "alice.smith@example.com",
         phone: "+1234567890",
-        password: "alicepassword",
+        password: "alicepassword", // Plain password, will be hashed
         address: "123 Maple Avenue, Wonderland",
         identificationType: "Passport",
         identificationNumber: "P12345678",
         identificationUpload: "src/assets/watt_idcard.jpg",
-        nextOfKin: "Bob Smith",
-        nextOfKinPhone: "+1234567890",
-        nextOfKinAddress: "123 Maple Avenue, Wonderland",
+        nextOfKin: {
+            name: "Bob Smith",
+            phone: "+1234567890",
+            relationship: "Brother",
+            address: "123 Maple Avenue, Wonderland",
+        },
+        investmentDetails: {
+            packageType: "Alpha Fixed Yield Fund",
+            amount: 5000,
+        },
     },
     {
         firstName: "Charlie",
         lastName: "Brown",
         email: "charlie.brown@example.com",
         phone: "+1987654321",
-        password: "charliepassword",
+        password: "charliepassword", // Plain password, will be hashed
         address: "789 Pine Road, Springfield",
         identificationType: "National ID",
         identificationNumber: "ID9876543",
         identificationUpload: "src/assets/watt_idcard.jpg",
-        nextOfKin: "Lucy Brown",
+        nextOfKin: {
+            name: "Lucy Brown",
+            phone: "+1987654321",
+            relationship: "Sister",
+            address: "789 Pine Road, Springfield",
+        },
+        investmentDetails: {
+            packageType: "Prime Equity Mutual Fund",
+            amount: 10000,
+        },
+    },
+    {
+        firstName: "Test",
+        lastName: "User",
+        email: "test.user@example.com",
+        phone: "+1234568940",
+        password: "testpassword", // Plain password, will be hashed
+        address: "456 Test Road, Test City",
+        identificationType: "Passport",
+        identificationNumber: "P12345679",
+        identificationUpload: "src/assets/watt_idcard.jpg",
+        nextOfKin: {
+            name: "John User",
+            phone: "+1234567890",
+            relationship: "Friend",
+            address: "456 Test Road, Test City",
+        },
+        investmentDetails: {
+            packageType: "Test Package",
+            amount: 5000,
+        },
     },
 ];
 
-// Investment data
-const investmentData = [
+// Sample products data
+const productsData = [
     {
+        productName: 'Alpha Fixed Yield Fund',
+        investmentType: 'Fixed Income',
         amount: 5000,
-        investor: "Alice Smith",
-        investmentDate: new Date('2024-01-01'),
-        status: "Active",
+        description: 'A low-risk fixed-income investment for steady returns.',
+        riskLevel: 'Low',
+        duration: 12,
+        returnRate: 8,
     },
     {
+        productName: 'Digital Asset Growth Fund',
+        investmentType: 'Cryptocurrency',
         amount: 10000,
-        investor: "Charlie Brown",
-        investmentDate: new Date('2024-02-15'),
-        status: "Completed",
+        description: 'A high-risk, high-reward fund focused on digital assets.',
+        riskLevel: 'High',
+        duration: 24,
+        returnRate: 20,
     },
     {
-        amount: 7500,
-        investor: "Alice Smith",
-        investmentDate: new Date('2024-03-10'),
-        status: "Active",
+        productName: 'Prime Equity Mutual Fund',
+        investmentType: 'Mutual Funds',
+        amount: 7000,
+        description: 'A diversified mutual fund for stable long-term growth.',
+        riskLevel: 'Medium',
+        duration: 36,
+        returnRate: 12,
+    },
+    {
+        productName: 'Dynamic Blend Fund',
+        investmentType: 'Hybrid',
+        amount: 8000,
+        description: 'A balanced investment strategy combining multiple assets.',
+        riskLevel: 'Medium',
+        duration: 18,
+        returnRate: 15,
     },
 ];
 
-// Function to populate the database with users
+// Function to populate users
 const populateUsers = async () => {
     try {
-        // Clear existing user data
-        await User.deleteMany({});
-        console.log('Existing user data cleared.');
+        await User.deleteMany();
+        console.log('Cleared existing users.');
 
-        // Hash passwords for all users
-        const hashedUsers = await Promise.all(
-            userData.map(async (user) => ({
-                ...user,
-                password: await bcrypt.hash(user.password, 10),
-            }))
-        );
+        const hashedUsers = await Promise.all(userData.map(async (user) => ({
+            ...user,
+            password: await bcrypt.hash(user.password, 10),
+        })));
 
-        // Insert new user data
         const users = await User.insertMany(hashedUsers);
-        console.log('Users added:', users);
+        console.log('Users added successfully.');
+        return users;
     } catch (error) {
-        console.error('Error populating user data:', error.message);
+        console.error('Error populating users:', error.message);
         throw error;
     }
 };
 
-// Function to populate the database with the admin user
-const populateAdmin = async () => {
+// Function to populate products
+const populateProducts = async () => {
     try {
-        // Check if the admin user already exists
-        const existingAdmin = await AdminUser.findOne({ email: process.env.ADMIN_EMAIL });
+        await Product.deleteMany();
+        console.log('Cleared existing products.');
 
-        if (!existingAdmin) {
-            // Hash the admin password
-            const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
-
-            // Create a new admin user
-            const admin = new AdminUser({
-                email: process.env.ADMIN_EMAIL,
-                password: hashedPassword,
-                isAdmin: true,
-            });
-
-            // Save the admin user to the database
-            await admin.save();
-            console.log('Admin user created successfully!');
-        } else {
-            console.log('Admin user already exists.');
-        }
+        await Product.insertMany(productsData);
+        console.log('Products added successfully.');
     } catch (error) {
-        console.error('Error creating admin user:', error.message);
+        console.error('Error populating products:', error.message);
         throw error;
     }
 };
 
-// Function to populate the database with investments
-const populateInvestments = async () => {
-    try {
-        // Clear existing investment data
-        await Investment.deleteMany({});
-        console.log('Existing investment data cleared.');
-
-        // Insert new investment data
-        const investments = await Investment.insertMany(investmentData);
-        console.log('Investments added:', investments);
-    } catch (error) {
-        console.error('Error populating investment data:', error.message);
-        throw error;
-    }
-};
-
-// Main function to connect to the database and populate data
+// Main function to populate the database
 const main = async () => {
     try {
-        await connectDB(); // Ensure the database is connected
-        console.log('Database connected.');
+        await connectDB();
+        console.log('Connected to database.');
 
-        // Populate the database
         await populateUsers();
-        await populateAdmin();
-        await populateInvestments();
+        await populateProducts();
 
-        console.log('Database population complete.');
+        console.log('Database population completed successfully.');
     } catch (error) {
-        console.error('An error occurred during database population:', error.message);
+        console.error('Error during population:', error.message);
     } finally {
-        // Ensure the database connection is closed
-        try {
-            await mongoose.connection.close();
-            console.log('Database connection closed.');
-        } catch (closeError) {
-            console.error('Error closing database connection:', closeError.message);
-        }
+        mongoose.connection.close().then(() => console.log('Database connection closed.'));
     }
 };
 
-// Run the script
+// Execute main function to populate the database
 main();
