@@ -25,16 +25,18 @@ const Login = () => {
   
       console.log('Login response:', data);
   
-      if (data?.status && data?.user && data?.token) {
-        // Store user data and token
+      if (data?.user && data?.token){
+        // Store user & token
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('token', data.token);
   
-        console.log('User stored:', JSON.parse(localStorage.getItem('user')));
-        console.log('Token stored:', localStorage.getItem('token'));
+        // Debug log
+        console.log('Navigating to user dashboard...');
   
-        // Ensure navigation happens
-        navigate('/user-dashboard', { replace: true });
+        // Add a slight delay just to test
+        setTimeout(() => {
+          navigate(`/user-dashboard/${data.user.id}`, { replace: true });
+        }, 300);
       } else {
         setError(data?.message || 'Login failed. Please try again.');
       }
@@ -45,6 +47,9 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  
+  
   
 
   return (

@@ -9,7 +9,7 @@ const Testimonial = React.lazy(() => import("../ui/Testimonial"));
 
 const Home = () => {
   return (
-    <main>
+    <main className="scroll-smooth">
       {/* Hero section */}
       <div id="home">
         <Hero />

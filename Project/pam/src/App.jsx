@@ -26,11 +26,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route
-          path="/user-dashboard"
-          element={user ? <UserDashboard /> : <Navigate to="/login" />}
-        />
-
+        <Route path="/user-dashboard/:userId" element={<UserDashboard />} />
         <Route path="/product" element={<ProductForm />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
 
