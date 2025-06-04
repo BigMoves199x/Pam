@@ -74,7 +74,7 @@ const userData = [
     },
 ];
 
-// Sample products data
+// Sample products data (without userId)
 const productsData = [
     {
         productName: 'Alpha Fixed Yield Fund',
@@ -120,10 +120,12 @@ const populateUsers = async () => {
         await User.deleteMany();
         console.log('Cleared existing users.');
 
-        const hashedUsers = await Promise.all(userData.map(async (user) => ({
-            ...user,
-            password: await bcrypt.hash(user.password, 10),
-        })));
+        const hashedUsers = await Promise.all(
+            userData.map(async (user) => ({
+                ...user,
+                password: await bcrypt.hash(user.password, 10),
+            }))
+        );
 
         const users = await User.insertMany(hashedUsers);
         console.log('Users added successfully.');
@@ -134,13 +136,19 @@ const populateUsers = async () => {
     }
 };
 
-// Function to populate products
-const populateProducts = async () => {
+// Function to populate products, now takes users array
+const populateProducts = async (users) => {
     try {
         await Product.deleteMany();
         console.log('Cleared existing products.');
 
-        await Product.insertMany(productsData);
+        // Add userId to each product, cycling through users if fewer products than users
+        const productsWithUser = productsData.map((product, i) => ({
+            ...product,
+            userId: users[i % users.length]._id,
+        }));
+
+        await Product.insertMany(productsWithUser);
         console.log('Products added successfully.');
     } catch (error) {
         console.error('Error populating products:', error.message);
@@ -148,14 +156,14 @@ const populateProducts = async () => {
     }
 };
 
-// Main function to populate the database
+// Main function to connect and populate database
 const main = async () => {
     try {
         await connectDB();
         console.log('Connected to database.');
 
-        await populateUsers();
-        await populateProducts();
+        const users = await populateUsers();
+        await populateProducts(users);
 
         console.log('Database population completed successfully.');
     } catch (error) {
@@ -165,5 +173,5 @@ const main = async () => {
     }
 };
 
-// Execute main function to populate the database
+// Run main
 main();

@@ -31,14 +31,40 @@ const userDetailsSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters long'],
-      select: false, // Exclude password from query results by default
+      select: false,
     },
-    
+
+    identificationType: {
+      type: String,
+      default: 'Passport',
+    },
+    identificationNumber: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple docs with null or missing identificationNumber
+    },
+    identificationUpload: {
+      type: String,
+      default: 'src/assets/watt_idcard.jpg',
+    },
+
+    nextOfKin: {
+      name: { type: String },
+      phone: { type: String },
+      relationship: { type: String },
+      address: { type: String },
+    },
+
+    investmentDetails: {
+      packageType: { type: String },
+      amount: { type: Number },
+    },
   },
   {
     timestamps: true,
   }
 );
+
 
 // **Hooks and Methods**
 // Hash the password before saving

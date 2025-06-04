@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userDetails');
+const Product = require('../models/usersProduct');
 const asyncHandler = require('express-async-handler');
 
 const SECRET_KEY = process.env.KEY;
@@ -86,6 +87,14 @@ const getUserById = asyncHandler(async (req, res) => {
   res.status(200).json(user);
 });
 
+const getProductsByUser = asyncHandler(async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) return res.status(400).json({ message: 'User ID is required' });
+
+  const products = await Product.find({ userId });
+  res.status(200).json(products);
+});
+
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select('-password').lean();
   res.status(200).json(users);
@@ -108,6 +117,7 @@ module.exports = {
   userLogin,
   authenticateToken,
   getUserById,
+  getProductsByUser,
   getAllUsers,
   updateUser,
   deleteUser,

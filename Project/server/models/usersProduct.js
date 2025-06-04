@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+
     productName: {
       type: String,
       required: [true, 'Product name is required'],
@@ -64,3 +70,6 @@ productSchema.virtual('totalReturns').get(function () {
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;
+
+
+
