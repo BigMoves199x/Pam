@@ -28,8 +28,8 @@ const UserDashboard = () => {
                 };
 
                 const [userRes, productsRes] = await Promise.all([
-                    axios.get(`http://localhost:3001/api/users/${userId}`, { headers }),
-                    axios.get(`http://localhost:3001/api/products?userId=${userId}`, { headers })
+                    axios.get(`http://localhost:3001/api/user/${userId}`, { headers }),
+                    axios.get(`http://localhost:3001/api/product?userId=${userId}`, { headers })
                 ]);
 
                 setUser(userRes.data);
